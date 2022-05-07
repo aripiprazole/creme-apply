@@ -1,0 +1,52 @@
+[versions]
+ktx = "1.6.0"
+kt = "1.6.10"
+exposed = "0.38.1"
+ktor = "2.0.1"
+log4j = "2.17.2"
+
+# Libraries
+[libraries.exposed-core]
+module = "org.jetbrains.exposed:exposed-core"
+version.ref = "exposed"
+
+[libraries.exposed-dao]
+module = "org.jetbrains.exposed:exposed-dao"
+version.ref = "exposed"
+
+[libraries.exposed-jdbc]
+module = "org.jetbrains.exposed:exposed-jdbc"
+version.ref = "exposed"
+
+[libraries.ktor-server-core]
+module = "io.ktor:ktor-server-core"
+version.ref = "ktor"
+
+[libraries.ktor-server-netty]
+module = "io.ktor:ktor-server-netty"
+version.ref = "ktor"
+
+[libraries.ktor-server-statusPages]
+module = "io.ktor:ktor-server-status-pages"
+version.ref = "ktor"
+
+[libraries.ktor-server-defaultHeaders]
+module = "io.ktor:ktor-server-default-headers"
+version.ref = "ktor"
+
+[libraries.log4j2-slf4j-impl]
+module = "org.apache.logging.log4j:log4j-slf4j-impl"
+version.ref = "log4j"
+
+# Plugins
+[plugins.kotlin]
+id = "org.jetbrains.kotlin.multiplatform"
+version = "1.6.10"
+
+[plugins.ktlint]
+id = "org.jlleitschuh.gradle.ktlint"
+version = "10.2.1"
+
+[plugins.detekt]
+id = "io.gitlab.arturbosch.detekt"
+version = "1.19.0"

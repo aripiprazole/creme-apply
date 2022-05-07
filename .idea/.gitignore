@@ -1,0 +1,5 @@
+*
+!externalDependencies.xml
+!detekt.xml
+!ktlint.xml
+!.gitignore
