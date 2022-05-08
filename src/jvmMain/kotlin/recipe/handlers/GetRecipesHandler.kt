@@ -18,7 +18,7 @@
 
 package creme.apply.recipe.handlers
 
-import creme.apply.paging.Paginated
+import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
 import creme.apply.shared.domain.Handler

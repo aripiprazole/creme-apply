@@ -18,7 +18,7 @@
 
 package creme.apply.recipe.domain
 
-import creme.apply.paging.Paginated
+import creme.apply.paging.domain.Paginated
 
 interface RecipeRepository {
   suspend fun getRecipes(page: Int): Paginated<Recipe>

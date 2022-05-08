@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.paging
+package creme.apply.paging.domain
 
 import kotlinx.serialization.Serializable
 

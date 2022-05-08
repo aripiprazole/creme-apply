@@ -18,7 +18,7 @@
 
 package creme.apply.recipe.infra
 
-import creme.apply.paging.Paginated
+import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
 
