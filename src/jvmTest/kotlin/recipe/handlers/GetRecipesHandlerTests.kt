@@ -16,13 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package recipe.domain
+package creme.apply.recipe.handlers
 
 import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
-import creme.apply.recipe.handlers.GetRecipesHandler
-import creme.apply.recipe.handlers.GetRecipesInput
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

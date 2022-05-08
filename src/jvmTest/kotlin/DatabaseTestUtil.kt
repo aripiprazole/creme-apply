@@ -16,6 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+package creme.apply
+
 import creme.apply.equipment.infra.EquipmentTable
 import creme.apply.food.infra.FoodTable
 import creme.apply.ingredient.infra.IngredientTable

@@ -16,13 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ingredient.handlers
+package creme.apply.ingredient.handlers
 
 import creme.apply.food.domain.Food
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
-import creme.apply.ingredient.handlers.GetRecipesByIngredientHandler
-import creme.apply.ingredient.handlers.GetRecipesByIngredientInput
 import creme.apply.recipe.domain.Recipe
 import creme.apply.shared.domain.EntityNotFoundException
 import io.mockk.coEvery

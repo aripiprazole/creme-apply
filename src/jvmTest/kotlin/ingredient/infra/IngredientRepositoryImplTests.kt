@@ -16,18 +16,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ingredient.infra
+package creme.apply.ingredient.infra
 
 import creme.apply.food.infra.FoodRepositoryImpl
 import creme.apply.food.infra.FoodTable
-import creme.apply.ingredient.infra.IngredientRepositoryImpl
-import creme.apply.ingredient.infra.IngredientTable
 import creme.apply.recipe.infra.RecipeTable
+import creme.apply.withTestDB
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
-import withTestDB
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
