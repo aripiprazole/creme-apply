@@ -21,8 +21,8 @@ package creme.apply.recipe.web
 import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
-import creme.apply.recipe.handlers.GetRecipeInput
 import creme.apply.recipe.handlers.GetRecipesHandler
+import creme.apply.recipe.handlers.GetRecipesInput
 import creme.apply.shared.domain.Handler
 import creme.apply.shared.domain.HandlerDsl
 import io.ktor.server.application.call
@@ -39,10 +39,10 @@ fun Route.recipeRoutes(recipeRepository: RecipeRepository) {
 }
 
 @HandlerDsl
-fun Route.getRecipes(handler: Handler<GetRecipeInput, Paginated<Recipe>>) {
+fun Route.getRecipes(handler: Handler<GetRecipesInput, Paginated<Recipe>>) {
   get {
     val page: Int by call.request.queryParameters
 
-    call.respond(handler.handle(GetRecipeInput(page)))
+    call.respond(handler.handle(GetRecipesInput(page)))
   }
 }

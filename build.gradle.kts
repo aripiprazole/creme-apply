@@ -76,7 +76,6 @@ configure<KotlinMultiplatformExtension> {
       dependencies {
         implementation(libs.exposed.core)
         implementation(libs.exposed.jdbc)
-        implementation(libs.exposed.dao)
 
         implementation(libs.ktor.server.core)
         implementation(libs.ktor.server.netty)
@@ -89,6 +88,17 @@ configure<KotlinMultiplatformExtension> {
         implementation(libs.log4j2.slf4j.impl)
       }
     }
-    val jvmTest by getting
+    val jvmTest by getting {
+      dependencies {
+        implementation(kotlin("test-junit5"))
+
+        implementation(libs.h2)
+        implementation(libs.mockk)
+
+        implementation(libs.exposed.core)
+
+        implementation(libs.log4j2.slf4j.impl)
+      }
+    }
   }
 }

@@ -16,18 +16,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.recipe.handlers
+package recipe.domain
 
 import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
-import creme.apply.shared.domain.Handler
+import creme.apply.recipe.handlers.GetRecipesHandler
+import creme.apply.recipe.handlers.GetRecipesInput
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.mockk
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Test
 
-class GetRecipesInput(val page: Int)
+class GetRecipesHandlerTests {
+  @Test
+  fun `test should return a recipe paginated`() {
+    val paginated = Paginated<Recipe>(values = setOf())
 
-class GetRecipesHandler(private val recipeRepository: RecipeRepository) :
-  Handler<GetRecipesInput, Paginated<Recipe>> {
-  override suspend fun handle(input: GetRecipesInput): Paginated<Recipe> {
-    return recipeRepository.getRecipes(input.page)
+    val recipeRepository = mockk<RecipeRepository> {
+      coEvery { getRecipes(any()) } returns paginated
+    }
+    val handler = GetRecipesHandler(recipeRepository)
+
+    runBlocking { handler.handle(GetRecipesInput(0)) }
+
+    coVerify(exactly = 1) { recipeRepository.getRecipes(0) }
   }
 }

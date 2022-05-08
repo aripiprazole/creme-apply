@@ -15,19 +15,3 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-package creme.apply.recipe.handlers
-
-import creme.apply.paging.domain.Paginated
-import creme.apply.recipe.domain.Recipe
-import creme.apply.recipe.domain.RecipeRepository
-import creme.apply.shared.domain.Handler
-
-class GetRecipesInput(val page: Int)
-
-class GetRecipesHandler(private val recipeRepository: RecipeRepository) :
-  Handler<GetRecipesInput, Paginated<Recipe>> {
-  override suspend fun handle(input: GetRecipesInput): Paginated<Recipe> {
-    return recipeRepository.getRecipes(input.page)
-  }
-}
