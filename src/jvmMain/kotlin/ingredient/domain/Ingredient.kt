@@ -22,4 +22,4 @@ import creme.apply.food.domain.Food
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Ingredient(val food: Food, val quantity: Int, val unit: String)
+data class Ingredient(val id: String, val food: Food, val quantity: Int, val unit: String)

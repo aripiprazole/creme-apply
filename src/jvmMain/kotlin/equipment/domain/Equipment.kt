@@ -22,4 +22,4 @@ import creme.apply.tool.domain.Tool
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Equipment(val tool: Tool, val quantity: Int)
+data class Equipment(val id: String, val tool: Tool, val quantity: Int)

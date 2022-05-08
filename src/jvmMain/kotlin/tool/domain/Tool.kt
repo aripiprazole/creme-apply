@@ -21,4 +21,4 @@ package creme.apply.tool.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Tool(val name: String, val hero: String)
+data class Tool(val id: String, val name: String, val hero: String)

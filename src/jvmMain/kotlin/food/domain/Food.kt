@@ -21,4 +21,4 @@ package creme.apply.food.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Food(val name: String, val hero: String)
+data class Food(val id: String, val name: String, val hero: String)
