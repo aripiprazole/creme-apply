@@ -18,7 +18,7 @@
 
 package creme.apply.ingredient.infra
 
-import creme.apply.food.infra.FoodRepositoryImpl
+import creme.apply.food.infra.ExposedFoodRepository
 import creme.apply.food.infra.FoodTable
 import creme.apply.recipe.infra.RecipeTable
 import creme.apply.withTestDB
@@ -37,8 +37,8 @@ const val RISOTO_DESCRIPTION = "O risotto é um prato típico italiano em que se
   " de carne ou legumes e outros ingredientes, até o" +
   " arroz estar cozido e não poder absorver mais líquido."
 
-class IngredientRepositoryImplTest {
-  private val ingredientRepository = IngredientRepositoryImpl(FoodRepositoryImpl())
+class ExposedIngredientRepositoryTest {
+  private val ingredientRepository = ExposedIngredientRepository(ExposedFoodRepository())
 
   @Test
   fun `test should return null when database does not contains it`(): Unit = withTestDB {

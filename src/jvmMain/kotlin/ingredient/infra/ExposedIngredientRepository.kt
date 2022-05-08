@@ -26,7 +26,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.util.UUID
 
-class IngredientRepositoryImpl(private val foodRepository: FoodRepository) : IngredientRepository {
+class ExposedIngredientRepository(private val foodRepository: FoodRepository) : IngredientRepository {
   override suspend fun findIngredient(id: String): Ingredient? = newSuspendedTransaction {
     IngredientTable
       .select { IngredientTable.id eq UUID.fromString(id) }

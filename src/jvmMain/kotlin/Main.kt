@@ -18,10 +18,10 @@
 
 package creme.apply
 
-import creme.apply.food.infra.FoodRepositoryImpl
-import creme.apply.ingredient.infra.IngredientRepositoryImpl
+import creme.apply.food.infra.ExposedFoodRepository
+import creme.apply.ingredient.infra.ExposedIngredientRepository
 import creme.apply.ingredient.web.ingredientRoutes
-import creme.apply.recipe.infra.RecipeRepositoryImpl
+import creme.apply.recipe.infra.ExposedRecipeRepository
 import creme.apply.recipe.web.recipeRoutes
 import creme.apply.shared.domain.EntityNotFoundException
 import io.ktor.http.HttpStatusCode
@@ -35,9 +35,9 @@ import io.ktor.server.routing.routing
 
 fun main() {
   embeddedServer(Netty, port = 8000) {
-    val recipeRepository = RecipeRepositoryImpl()
-    val foodRepository = FoodRepositoryImpl()
-    val ingredientRepository = IngredientRepositoryImpl(foodRepository)
+    val recipeRepository = ExposedRecipeRepository()
+    val foodRepository = ExposedFoodRepository()
+    val ingredientRepository = ExposedIngredientRepository(foodRepository)
 
     install(StatusPages) {
       exception { call: ApplicationCall, cause: EntityNotFoundException ->

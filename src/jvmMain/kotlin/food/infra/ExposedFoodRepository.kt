@@ -16,23 +16,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.recipe.infra
+package creme.apply.food.infra
 
-import creme.apply.ingredient.domain.Ingredient
-import creme.apply.paging.domain.Paginated
-import creme.apply.recipe.domain.Recipe
-import creme.apply.recipe.domain.RecipeRepository
+import creme.apply.food.domain.Food
+import creme.apply.food.domain.FoodRepository
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.util.UUID
 
-class RecipeRepositoryImpl : RecipeRepository {
-  override suspend fun getRecipes(page: Int): Paginated<Recipe> {
-    TODO("Not yet implemented")
+class ExposedFoodRepository : FoodRepository {
+  override suspend fun findFood(id: String): Food? = newSuspendedTransaction {
+    FoodTable
+      .select { FoodTable.id eq UUID.fromString(id) }
+      .map { it.toFood() }
+      .firstOrNull()
   }
 
-  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> {
-    TODO("Not yet implemented")
-  }
-
-  override suspend fun findRecipe(id: String): Recipe? {
-    TODO("Not yet implemented")
+  private fun ResultRow.toFood(): Food {
+    return Food(this[FoodTable.id].value.toString(), this[FoodTable.name], this[FoodTable.hero])
   }
 }
