@@ -82,6 +82,9 @@ configure<KotlinMultiplatformExtension> {
         implementation(libs.ktor.server.netty)
         implementation(libs.ktor.server.statusPages)
         implementation(libs.ktor.server.defaultHeaders)
+        implementation(libs.ktor.server.contentNegotiation)
+
+        implementation(libs.ktor.serialization.kotlinxJson)
 
         implementation(libs.log4j2.slf4j.impl)
       }

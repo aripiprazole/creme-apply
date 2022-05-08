@@ -18,19 +18,34 @@
 
 package creme.apply
 
-import io.ktor.server.application.call
+import creme.apply.ingredient.infra.IngredientRepositoryImpl
+import creme.apply.ingredient.web.ingredientRoutes
+import creme.apply.recipe.infra.RecipeRepositoryImpl
+import creme.apply.recipe.web.recipeRoutes
+import creme.apply.shared.domain.EntityNotFoundException
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import io.ktor.server.response.respondText
-import io.ktor.server.routing.get
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
 
 fun main() {
   embeddedServer(Netty, port = 8000) {
-    routing {
-      get("/") {
-        call.respondText("Hello, world!")
+    val recipeRepository = RecipeRepositoryImpl()
+    val ingredientRepository = IngredientRepositoryImpl()
+
+    install(StatusPages) {
+      exception { call: ApplicationCall, cause: EntityNotFoundException ->
+        call.respond(HttpStatusCode.NotFound, cause.toJson())
       }
+    }
+
+    routing {
+      recipeRoutes(recipeRepository)
+      ingredientRoutes(ingredientRepository)
     }
   }.start(wait = true)
 }
