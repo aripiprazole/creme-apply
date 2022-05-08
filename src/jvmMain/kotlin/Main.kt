@@ -47,7 +47,7 @@ fun main() {
 
     routing {
       recipeRoutes(recipeRepository)
-      ingredientRoutes(ingredientRepository)
+      ingredientRoutes(ingredientRepository, recipeRepository)
     }
   }.start(wait = true)
 }

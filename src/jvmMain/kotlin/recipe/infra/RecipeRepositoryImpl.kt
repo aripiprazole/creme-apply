@@ -18,12 +18,17 @@
 
 package creme.apply.recipe.infra
 
+import creme.apply.ingredient.domain.Ingredient
 import creme.apply.paging.domain.Paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
 
 class RecipeRepositoryImpl : RecipeRepository {
   override suspend fun getRecipes(page: Int): Paginated<Recipe> {
+    TODO("Not yet implemented")
+  }
+
+  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> {
     TODO("Not yet implemented")
   }
 

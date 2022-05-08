@@ -21,7 +21,6 @@ package creme.apply.ingredient.infra
 import creme.apply.food.domain.FoodRepository
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
-import creme.apply.recipe.domain.Recipe
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -33,10 +32,6 @@ class IngredientRepositoryImpl(private val foodRepository: FoodRepository) : Ing
       .select { IngredientTable.id eq UUID.fromString(id) }
       .map { it.toIngredient() }
       .firstOrNull()
-  }
-
-  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> {
-    TODO("Not yet implemented")
   }
 
   private suspend fun ResultRow.toIngredient(): Ingredient {
