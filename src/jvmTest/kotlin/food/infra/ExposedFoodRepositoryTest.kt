@@ -29,31 +29,33 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class ExposedFoodRepositoryTest {
-  @Test
-  fun `test should return null when database does not contains it`(): Unit = withTestDB {
-    val foodRepository = ExposedFoodRepository()
+  class FindFoodTests {
+    @Test
+    fun `test should return null when database does not contains it`(): Unit = withTestDB {
+      val foodRepository = ExposedFoodRepository()
 
-    val recipe = runBlocking { foodRepository.findFood(UUID.randomUUID().toString()) }
+      val recipe = runBlocking { foodRepository.findFood(UUID.randomUUID().toString()) }
 
-    assertNull(recipe)
-  }
-
-  @Test
-  fun `test should return a food when database contains it`(): Unit = withTestDB {
-    val foodRepository = ExposedFoodRepository()
-
-    val foodEntityId = transaction {
-      FoodTable.insertAndGetId {
-        it[name] = "Alho poró"
-        it[hero] = "..."
-      }
+      assertNull(recipe)
     }
 
-    val recipe = runBlocking { foodRepository.findFood(foodEntityId.value.toString()) }
+    @Test
+    fun `test should return a food when database contains it`(): Unit = withTestDB {
+      val foodRepository = ExposedFoodRepository()
 
-    assertNotNull(recipe)
-    assertEquals(foodEntityId.value.toString(), recipe.id)
-    assertEquals("Alho poró", recipe.name)
-    assertEquals("...", recipe.hero)
+      val foodEntityId = transaction {
+        FoodTable.insertAndGetId {
+          it[name] = "Alho poró"
+          it[hero] = "..."
+        }
+      }
+
+      val recipe = runBlocking { foodRepository.findFood(foodEntityId.value.toString()) }
+
+      assertNotNull(recipe)
+      assertEquals(foodEntityId.value.toString(), recipe.id)
+      assertEquals("Alho poró", recipe.name)
+      assertEquals("...", recipe.hero)
+    }
   }
 }
