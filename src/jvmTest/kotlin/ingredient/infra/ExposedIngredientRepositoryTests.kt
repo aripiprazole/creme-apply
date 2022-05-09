@@ -20,6 +20,7 @@ package creme.apply.ingredient.infra
 
 import creme.apply.food.infra.ExposedFoodRepository
 import creme.apply.food.infra.FoodTable
+import creme.apply.recipe.infra.RISOTO_DESCRIPTION
 import creme.apply.recipe.infra.RecipeTable
 import creme.apply.withTestDB
 import kotlinx.coroutines.runBlocking
@@ -31,13 +32,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
-const val RISOTO_DESCRIPTION = "O risotto é um prato típico italiano em que se " +
-  "fritam levemente as cebolas e o arbório, ou o arroz" +
-  " em manteiga,  e se vai gradualmente deitando fundo" +
-  " de carne ou legumes e outros ingredientes, até o" +
-  " arroz estar cozido e não poder absorver mais líquido."
-
-class ExposedIngredientRepositoryTest {
+class ExposedIngredientRepositoryTests {
   private val ingredientRepository = ExposedIngredientRepository(ExposedFoodRepository())
 
   @Test

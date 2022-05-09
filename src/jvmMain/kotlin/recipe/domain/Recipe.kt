@@ -28,6 +28,6 @@ data class Recipe(
   val name: String,
   val description: String,
   val hero: String,
-  val ingredients: List<Ingredient>,
-  val equipment: List<Equipment>,
+  val ingredients: Set<Ingredient>,
+  val equipments: Set<Equipment>,
 )

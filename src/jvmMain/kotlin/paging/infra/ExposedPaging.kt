@@ -16,24 +16,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.food.infra
+package creme.apply.paging.infra
 
-import creme.apply.food.domain.Food
-import creme.apply.food.domain.FoodRepository
+import creme.apply.paging.domain.Paginated
+import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.util.UUID
+import kotlin.math.ceil
 
-class ExposedFoodRepository : FoodRepository {
-  override suspend fun findFood(id: String): Food? = newSuspendedTransaction {
-    FoodTable
-      .select { FoodTable.id eq UUID.fromString(id) }
-      .map { it.toFood() }
-      .firstOrNull()
-  }
+fun Query.paginated(page: Int, size: Int = Paginated.PAGE_SIZE): Query {
+  return limit(size, ((page - 1) * size).toLong())
 }
 
-private fun ResultRow.toFood(): Food {
-  return Food(this[FoodTable.id].value.toString(), this[FoodTable.name], this[FoodTable.hero])
+fun Query.countTotalPages(size: Int = Paginated.PAGE_SIZE): Int {
+  return ceil((count() / size).toDouble()).toInt() + 1
+}
+
+inline fun <R> Query.mapToPage(size: Int = Paginated.PAGE_SIZE, f: (ResultRow) -> R): Paginated<R> {
+  val totalPages = countTotalPages()
+
+  return Paginated(map(f).toSet(), size, totalPages)
 }

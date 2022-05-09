@@ -18,14 +18,28 @@
 
 package creme.apply.recipe.infra
 
+import creme.apply.equipment.domain.Equipment
+import creme.apply.equipment.domain.EquipmentRepository
 import creme.apply.ingredient.domain.Ingredient
+import creme.apply.ingredient.domain.IngredientRepository
 import creme.apply.paging.domain.Paginated
+import creme.apply.paging.infra.mapToPage
+import creme.apply.paging.infra.paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
-class ExposedRecipeRepository : RecipeRepository {
-  override suspend fun getRecipes(page: Int): Paginated<Recipe> {
-    TODO("Not yet implemented")
+class ExposedRecipeRepository(
+  private val ingredientRepository: IngredientRepository,
+  private val equipmentRepository: EquipmentRepository,
+) : RecipeRepository {
+  override suspend fun getRecipes(page: Int): Paginated<Recipe> = newSuspendedTransaction {
+    RecipeTable
+      .selectAll()
+      .paginated(page)
+      .mapToPage { it.toRecipe(ingredientRepository, equipmentRepository) }
   }
 
   override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> {
@@ -35,4 +49,26 @@ class ExposedRecipeRepository : RecipeRepository {
   override suspend fun findRecipe(id: String): Recipe? {
     TODO("Not yet implemented")
   }
+}
+
+private suspend fun ResultRow.toRecipe(
+  ingredientRepository: IngredientRepository,
+  equipmentRepository: EquipmentRepository,
+): Recipe {
+  val ingredients = mutableSetOf<Ingredient>()
+  val equipments = mutableSetOf<Equipment>()
+
+  val recipe = Recipe(
+    id = this[RecipeTable.id].value.toString(),
+    name = this[RecipeTable.name],
+    hero = this[RecipeTable.hero],
+    description = this[RecipeTable.description],
+    ingredients = ingredients,
+    equipments = equipments,
+  )
+
+  ingredients.addAll(ingredientRepository.getIngredientsByRecipe(recipe))
+  equipments.addAll(equipmentRepository.getEquipmentsByRecipe(recipe))
+
+  return recipe
 }

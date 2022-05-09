@@ -18,6 +18,10 @@
 
 package creme.apply.ingredient.domain
 
+import creme.apply.recipe.domain.Recipe
+
 interface IngredientRepository {
   suspend fun findIngredient(id: String): Ingredient?
+
+  suspend fun getIngredientsByRecipe(recipe: Recipe): Set<Ingredient>
 }

@@ -29,11 +29,13 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
 fun withTestDB(block: () -> Unit) {
-  val databaseFile = File("databases").resolve("database")
+  val databasesFolder = File("databases")
+  val databaseFile = databasesFolder.resolve("database")
 
-  if (databaseFile.exists()) {
-    databaseFile.delete()
-  }
+  databasesFolder.listFiles()
+    .orEmpty()
+    .filter { it.name.endsWith(".mv.db") }
+    .forEach { it.delete() }
 
   Database.connect(
     url = "jdbc:h2:file:${databaseFile.absolutePath};MODE=postgresql;DATABASE_TO_UPPER=false",

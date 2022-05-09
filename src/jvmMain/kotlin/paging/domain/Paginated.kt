@@ -21,4 +21,12 @@ package creme.apply.paging.domain
 import kotlinx.serialization.Serializable
 
 @Serializable
-class Paginated<T>(val values: Set<T>)
+class Paginated<T>(val values: Set<T>, val size: Int, val totalPages: Int) {
+  companion object {
+    const val PAGE_SIZE = 8
+
+    fun <T> empty(): Paginated<T> {
+      return Paginated(setOf(), PAGE_SIZE, 0)
+    }
+  }
+}

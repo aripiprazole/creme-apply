@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test
 class GetRecipesHandlerTests {
   @Test
   fun `test should return a recipe paginated`() {
-    val paginated = Paginated<Recipe>(values = setOf())
+    val paginated = Paginated.empty<Recipe>()
 
     val recipeRepository = mockk<RecipeRepository> {
       coEvery { getRecipes(any()) } returns paginated
