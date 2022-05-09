@@ -20,8 +20,11 @@ package creme.apply.recipe.infra
 
 import creme.apply.equipment.domain.Equipment
 import creme.apply.equipment.domain.EquipmentRepository
+import creme.apply.food.domain.Food
+import creme.apply.food.infra.FoodTable
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
+import creme.apply.ingredient.infra.IngredientTable
 import creme.apply.paging.domain.Paginated
 import creme.apply.withTestDB
 import io.mockk.coEvery
@@ -42,6 +45,92 @@ const val RISOTO_DESCRIPTION = "O risotto é um prato típico italiano em que se
   " arroz estar cozido e não poder absorver mais líquido."
 
 class ExposedRecipeRepositoryTests {
+  @Test
+  fun `test should return a empty set with when a ingredient is not used in any recipes`(): Unit =
+    withTestDB {
+      val ingredients = setOf<Ingredient>()
+      val equipments = setOf<Equipment>()
+
+      val ingredientRepository = mockk<IngredientRepository> {
+        coEvery { getIngredientsByRecipe(any()) } returns ingredients
+      }
+      val equipmentRepository = mockk<EquipmentRepository> {
+        coEvery { getEquipmentsByRecipe(any()) } returns equipments
+      }
+
+      val ingredient = Ingredient(
+        id = UUID.randomUUID().toString(),
+        food = Food(UUID.randomUUID().toString(), "Alho poró", "..."),
+        quantity = 1,
+        unit = "colher de sopa",
+      )
+
+      val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
+
+      val recipes = runBlocking { recipeRepository.getRecipesByIngredient(ingredient) }
+
+      assertEquals(0, recipes.size)
+    }
+
+  @Test
+  fun `test should return a set with all recipes with an ingredient`(): Unit = withTestDB {
+    val ingredients = setOf<Ingredient>()
+    val equipments = setOf<Equipment>()
+
+    val ingredientRepository = mockk<IngredientRepository> {
+      coEvery { getIngredientsByRecipe(any()) } returns ingredients
+    }
+    val equipmentRepository = mockk<EquipmentRepository> {
+      coEvery { getEquipmentsByRecipe(any()) } returns equipments
+    }
+
+    val recipeEntityId = transaction {
+      RecipeTable.insertAndGetId {
+        it[name] = "Risoto"
+        it[hero] = "..."
+        it[description] = RISOTO_DESCRIPTION
+      }
+    }
+
+    val foodEntityId = transaction {
+      FoodTable.insertAndGetId {
+        it[name] = "Alho poró"
+        it[hero] = "..."
+      }
+    }
+
+    val ingredientEntityId = transaction {
+      IngredientTable.insertAndGetId {
+        it[quantity] = 1
+        it[unit] = "colher de sopa"
+        it[foodId] = foodEntityId
+        it[recipeId] = recipeEntityId
+      }
+    }
+
+    val ingredient = Ingredient(
+      id = ingredientEntityId.value.toString(),
+      food = Food(foodEntityId.value.toString(), "Alho poró", "..."),
+      quantity = 1,
+      unit = "colher de sopa",
+    )
+
+    val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
+
+    val recipes = runBlocking { recipeRepository.getRecipesByIngredient(ingredient) }
+
+    assertEquals(1, recipes.size)
+
+    val recipe = recipes.first()
+
+    assertEquals(recipeEntityId.value.toString(), recipe.id)
+    assertEquals("Risoto", recipe.name)
+    assertEquals("...", recipe.hero)
+    assertEquals(RISOTO_DESCRIPTION, recipe.description)
+    assertEquals(ingredients, recipe.ingredients)
+    assertEquals(equipments, recipe.equipments)
+  }
+
   @Test
   fun `test should return null when database does not contains it`(): Unit = withTestDB {
     val ingredientRepository = mockk<IngredientRepository>()

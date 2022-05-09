@@ -22,6 +22,7 @@ import creme.apply.equipment.domain.Equipment
 import creme.apply.equipment.domain.EquipmentRepository
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
+import creme.apply.ingredient.infra.IngredientTable
 import creme.apply.paging.domain.Paginated
 import creme.apply.paging.infra.mapToPage
 import creme.apply.paging.infra.paginated
@@ -44,9 +45,13 @@ class ExposedRecipeRepository(
       .mapToPage { it.toRecipe(ingredientRepository, equipmentRepository) }
   }
 
-  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> {
-    TODO("Not yet implemented")
-  }
+  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> =
+    newSuspendedTransaction {
+      (RecipeTable innerJoin IngredientTable)
+        .select { RecipeTable.id eq IngredientTable.recipeId }
+        .map { it.toRecipe(ingredientRepository, equipmentRepository) }
+        .toSet()
+    }
 
   override suspend fun findRecipe(id: String): Recipe? = newSuspendedTransaction {
     RecipeTable
