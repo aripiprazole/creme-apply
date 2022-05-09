@@ -30,7 +30,10 @@ import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
+import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 const val RISOTO_DESCRIPTION = "O risotto é um prato típico italiano em que se " +
   "fritam levemente as cebolas e o arbório, ou o arroz" +
@@ -39,6 +42,51 @@ const val RISOTO_DESCRIPTION = "O risotto é um prato típico italiano em que se
   " arroz estar cozido e não poder absorver mais líquido."
 
 class ExposedRecipeRepositoryTests {
+  @Test
+  fun `test should return null when database does not contains it`(): Unit = withTestDB {
+    val ingredientRepository = mockk<IngredientRepository>()
+    val equipmentRepository = mockk<EquipmentRepository>()
+
+    val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
+
+    val recipe = runBlocking { recipeRepository.findRecipe(UUID.randomUUID().toString()) }
+
+    assertNull(recipe)
+  }
+
+  @Test
+  fun `test should return a recipe when database contains it`(): Unit = withTestDB {
+    val ingredients = setOf<Ingredient>()
+    val equipments = setOf<Equipment>()
+
+    val ingredientRepository = mockk<IngredientRepository> {
+      coEvery { getIngredientsByRecipe(any()) } returns ingredients
+    }
+    val equipmentRepository = mockk<EquipmentRepository> {
+      coEvery { getEquipmentsByRecipe(any()) } returns equipments
+    }
+
+    val recipeEntityId = transaction {
+      RecipeTable.insertAndGetId {
+        it[name] = "Risoto"
+        it[hero] = "..."
+        it[description] = RISOTO_DESCRIPTION
+      }
+    }
+
+    val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
+
+    val recipe = runBlocking { recipeRepository.findRecipe(recipeEntityId.value.toString()) }
+
+    assertNotNull(recipe)
+    assertEquals(recipeEntityId.value.toString(), recipe.id)
+    assertEquals("Risoto", recipe.name)
+    assertEquals("...", recipe.hero)
+    assertEquals(RISOTO_DESCRIPTION, recipe.description)
+    assertEquals(ingredients, recipe.ingredients)
+    assertEquals(equipments, recipe.equipments)
+  }
+
   @Test
   fun `test should return a recipe paginated`(): Unit = withTestDB {
     val ingredients = setOf<Ingredient>()
@@ -73,5 +121,7 @@ class ExposedRecipeRepositoryTests {
     assertEquals("Risoto", recipe.name)
     assertEquals("...", recipe.hero)
     assertEquals(RISOTO_DESCRIPTION, recipe.description)
+    assertEquals(ingredients, recipe.ingredients)
+    assertEquals(equipments, recipe.equipments)
   }
 }

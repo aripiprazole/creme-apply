@@ -28,8 +28,10 @@ import creme.apply.paging.infra.paginated
 import creme.apply.recipe.domain.Recipe
 import creme.apply.recipe.domain.RecipeRepository
 import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.util.UUID
 
 class ExposedRecipeRepository(
   private val ingredientRepository: IngredientRepository,
@@ -46,8 +48,11 @@ class ExposedRecipeRepository(
     TODO("Not yet implemented")
   }
 
-  override suspend fun findRecipe(id: String): Recipe? {
-    TODO("Not yet implemented")
+  override suspend fun findRecipe(id: String): Recipe? = newSuspendedTransaction {
+    RecipeTable
+      .select { RecipeTable.id eq UUID.fromString(id) }
+      .map { it.toRecipe(ingredientRepository, equipmentRepository) }
+      .firstOrNull()
   }
 }
 
