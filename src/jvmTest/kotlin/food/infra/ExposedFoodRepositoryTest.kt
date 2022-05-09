@@ -34,9 +34,9 @@ class ExposedFoodRepositoryTest {
     fun `test should return null when database does not contains it`(): Unit = withTestDB {
       val foodRepository = ExposedFoodRepository()
 
-      val recipe = runBlocking { foodRepository.findFood(UUID.randomUUID().toString()) }
+      val food = runBlocking { foodRepository.findFood(UUID.randomUUID().toString()) }
 
-      assertNull(recipe)
+      assertNull(food)
     }
 
     @Test
@@ -50,12 +50,12 @@ class ExposedFoodRepositoryTest {
         }
       }
 
-      val recipe = runBlocking { foodRepository.findFood(foodEntityId.value.toString()) }
+      val food = runBlocking { foodRepository.findFood(foodEntityId.value.toString()) }
 
-      assertNotNull(recipe)
-      assertEquals(foodEntityId.value.toString(), recipe.id)
-      assertEquals("Alho poró", recipe.name)
-      assertEquals("...", recipe.hero)
+      assertNotNull(food)
+      assertEquals(foodEntityId.value.toString(), food.id)
+      assertEquals("Alho poró", food.name)
+      assertEquals("...", food.hero)
     }
   }
 }
