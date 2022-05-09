@@ -20,9 +20,20 @@ package creme.apply.tool.infra
 
 import creme.apply.tool.domain.Tool
 import creme.apply.tool.domain.ToolRepository
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.util.UUID
 
 class ExposedToolRepository : ToolRepository {
-  override suspend fun findTool(id: String): Tool? {
-    TODO("Not yet implemented")
+  override suspend fun findTool(id: String): Tool? = newSuspendedTransaction {
+    ToolTable
+      .select { ToolTable.id eq UUID.fromString(id) }
+      .map { it.toTool() }
+      .firstOrNull()
   }
+}
+
+private fun ResultRow.toTool(): Tool {
+  return Tool(this[ToolTable.id].value.toString(), this[ToolTable.name], this[ToolTable.hero])
 }
