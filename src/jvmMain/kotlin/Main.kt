@@ -25,6 +25,7 @@ import creme.apply.ingredient.web.ingredientRoutes
 import creme.apply.recipe.infra.ExposedRecipeRepository
 import creme.apply.recipe.web.recipeRoutes
 import creme.apply.shared.domain.EntityNotFoundException
+import creme.apply.tool.infra.ExposedToolRepository
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.install
@@ -37,8 +38,9 @@ import io.ktor.server.routing.routing
 fun main() {
   embeddedServer(Netty, port = 8000) {
     val foodRepository = ExposedFoodRepository()
+    val toolRepository = ExposedToolRepository()
     val ingredientRepository = ExposedIngredientRepository(foodRepository)
-    val equipmentRepository = ExposedEquipmentRepository()
+    val equipmentRepository = ExposedEquipmentRepository(toolRepository)
     val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
 
     install(StatusPages) {

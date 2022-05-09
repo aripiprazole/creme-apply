@@ -19,9 +19,11 @@
 package creme.apply.equipment.infra
 
 import creme.apply.recipe.infra.RecipeTable
+import creme.apply.tool.infra.ToolTable
 import org.jetbrains.exposed.dao.id.UUIDTable
 
 object EquipmentTable : UUIDTable("equipment") {
-  val name = varchar("name", 80)
+  val quantity = integer("quantity")
+  val toolId = reference("tool_id", ToolTable)
   val recipeId = reference("recipe_id", RecipeTable)
 }

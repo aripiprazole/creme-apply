@@ -21,9 +21,32 @@ package creme.apply.equipment.infra
 import creme.apply.equipment.domain.Equipment
 import creme.apply.equipment.domain.EquipmentRepository
 import creme.apply.recipe.domain.Recipe
+import creme.apply.shared.domain.EntityNotFoundException
+import creme.apply.tool.domain.ToolRepository
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.util.UUID
 
-class ExposedEquipmentRepository : EquipmentRepository {
+class ExposedEquipmentRepository(private val toolRepository: ToolRepository) : EquipmentRepository {
+  override suspend fun findEquipment(id: String): Equipment? = newSuspendedTransaction {
+    EquipmentTable
+      .select { EquipmentTable.id eq UUID.fromString(id) }
+      .map { it.toEquipment(toolRepository) }
+      .firstOrNull()
+  }
+
   override suspend fun getEquipmentsByRecipe(recipe: Recipe): Set<Equipment> {
     TODO("Not yet implemented")
   }
+}
+
+private suspend fun ResultRow.toEquipment(toolRepository: ToolRepository): Equipment {
+  val toolId = this[EquipmentTable.toolId].value.toString()
+
+  return Equipment(
+    id = this[EquipmentTable.id].value.toString(),
+    quantity = this[EquipmentTable.quantity],
+    tool = toolRepository.findTool(toolId) ?: throw EntityNotFoundException(toolId)
+  )
 }

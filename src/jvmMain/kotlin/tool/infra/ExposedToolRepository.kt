@@ -16,12 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.equipment.domain
+package creme.apply.tool.infra
 
-import creme.apply.recipe.domain.Recipe
+import creme.apply.tool.domain.Tool
+import creme.apply.tool.domain.ToolRepository
 
-interface EquipmentRepository {
-  suspend fun findEquipment(id: String): Equipment?
-
-  suspend fun getEquipmentsByRecipe(recipe: Recipe): Set<Equipment>
+class ExposedToolRepository : ToolRepository {
+  override suspend fun findTool(id: String): Tool? {
+    TODO("Not yet implemented")
+  }
 }

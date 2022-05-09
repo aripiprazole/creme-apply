@@ -16,12 +16,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package creme.apply.equipment.domain
+package creme.apply.tool.domain
 
-import creme.apply.recipe.domain.Recipe
-
-interface EquipmentRepository {
-  suspend fun findEquipment(id: String): Equipment?
-
-  suspend fun getEquipmentsByRecipe(recipe: Recipe): Set<Equipment>
+interface ToolRepository {
+  suspend fun findTool(id: String): Tool?
 }
