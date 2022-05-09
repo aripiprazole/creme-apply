@@ -18,25 +18,31 @@
 
 package creme.apply.ingredient.infra
 
-import creme.apply.food.infra.ExposedFoodRepository
+import creme.apply.food.domain.Food
+import creme.apply.food.domain.FoodRepository
 import creme.apply.food.infra.FoodTable
 import creme.apply.recipe.infra.RISOTO_DESCRIPTION
 import creme.apply.recipe.infra.RecipeTable
+import creme.apply.shared.domain.EntityNotFoundException
 import creme.apply.withTestDB
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class ExposedIngredientRepositoryTests {
-  private val ingredientRepository = ExposedIngredientRepository(ExposedFoodRepository())
-
   @Test
   fun `test should return null when database does not contains it`(): Unit = withTestDB {
+    val foodRepository = mockk<FoodRepository>()
+    val ingredientRepository = ExposedIngredientRepository(foodRepository)
+
     val ingredient = runBlocking {
       ingredientRepository.findIngredient(UUID.randomUUID().toString())
     }
@@ -70,6 +76,13 @@ class ExposedIngredientRepositoryTests {
       }
     }
 
+    val food = Food(foodEntityId.value.toString(), "Alho poró", "... ")
+
+    val foodRepository = mockk<FoodRepository> {
+      coEvery { findFood(food.id) } returns food
+    }
+    val ingredientRepository = ExposedIngredientRepository(foodRepository)
+
     val ingredient = runBlocking {
       ingredientRepository.findIngredient(ingredientEntityId.value.toString())
     }
@@ -79,6 +92,43 @@ class ExposedIngredientRepositoryTests {
     assertEquals(1, ingredient.quantity)
     assertEquals("colher de sopa", ingredient.unit)
     assertEquals(ingredientEntityId.value.toString(), ingredient.id)
-    assertEquals(foodEntityId.value.toString(), ingredient.food.id)
+    assertEquals(food, ingredient.food)
   }
+
+  @Test
+  fun `test should throw an error when food repository does contains the food`(): Unit =
+    withTestDB {
+      val recipeEntityId = transaction {
+        RecipeTable.insertAndGetId {
+          it[name] = "Risoto"
+          it[hero] = "..."
+          it[description] = RISOTO_DESCRIPTION
+        }
+      }
+
+      val foodEntityId = transaction {
+        FoodTable.insertAndGetId {
+          it[name] = "Alho poró"
+          it[hero] = "..."
+        }
+      }
+
+      val ingredientEntityId = transaction {
+        IngredientTable.insertAndGetId {
+          it[quantity] = 1
+          it[unit] = "colher de sopa"
+          it[foodId] = foodEntityId
+          it[recipeId] = recipeEntityId
+        }
+      }
+
+      val foodRepository = mockk<FoodRepository> {
+        coEvery { findFood(foodEntityId.value.toString()) } returns null
+      }
+      val ingredientRepository = ExposedIngredientRepository(foodRepository)
+
+      assertThrows<EntityNotFoundException>("Requested entity with id $foodEntityId was not found.") {
+        runBlocking { ingredientRepository.findIngredient(ingredientEntityId.value.toString()) }
+      }
+    }
 }

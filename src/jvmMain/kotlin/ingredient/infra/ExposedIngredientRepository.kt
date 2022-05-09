@@ -22,6 +22,7 @@ import creme.apply.food.domain.FoodRepository
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
 import creme.apply.recipe.domain.Recipe
+import creme.apply.shared.domain.EntityNotFoundException
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -47,8 +48,6 @@ private suspend fun ResultRow.toIngredient(foodRepository: FoodRepository): Ingr
     id = this[IngredientTable.id].value.toString(),
     quantity = this[IngredientTable.quantity],
     unit = this[IngredientTable.unit],
-    // NOTE: does not have an entity not found error, because the database foreign key make it
-    // impossible to get a null here
-    food = foodRepository.findFood(foodId)!!,
+    food = foodRepository.findFood(foodId) ?: throw EntityNotFoundException(foodId),
   )
 }
