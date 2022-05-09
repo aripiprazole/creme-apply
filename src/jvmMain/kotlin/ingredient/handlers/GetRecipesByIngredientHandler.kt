@@ -20,7 +20,6 @@ package creme.apply.ingredient.handlers
 
 import creme.apply.ingredient.domain.IngredientRepository
 import creme.apply.recipe.domain.Recipe
-import creme.apply.recipe.domain.RecipeRepository
 import creme.apply.shared.domain.EntityNotFoundException
 import creme.apply.shared.domain.Handler
 
@@ -28,12 +27,11 @@ class GetRecipesByIngredientInput(val ingredientId: String)
 
 class GetRecipesByIngredientHandler(
   private val ingredientRepository: IngredientRepository,
-  private val recipeRepository: RecipeRepository,
 ) : Handler<GetRecipesByIngredientInput, Set<Recipe>> {
   override suspend fun handle(input: GetRecipesByIngredientInput): Set<Recipe> {
     val ingredient = ingredientRepository.findIngredient(input.ingredientId)
       ?: throw EntityNotFoundException(input.ingredientId)
 
-    return recipeRepository.getRecipesByIngredient(ingredient)
+    return ingredientRepository.getRecipesByIngredient(ingredient)
   }
 }

@@ -23,5 +23,7 @@ import creme.apply.recipe.domain.Recipe
 interface IngredientRepository {
   suspend fun findIngredient(id: String): Ingredient?
 
+  suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe>
+
   suspend fun getIngredientsByRecipe(recipe: Recipe): Set<Ingredient>
 }

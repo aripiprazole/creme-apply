@@ -25,7 +25,6 @@ import creme.apply.ingredient.handlers.FindIngredientInput
 import creme.apply.ingredient.handlers.GetRecipesByIngredientHandler
 import creme.apply.ingredient.handlers.GetRecipesByIngredientInput
 import creme.apply.recipe.domain.Recipe
-import creme.apply.recipe.domain.RecipeRepository
 import creme.apply.shared.domain.Handler
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
@@ -34,18 +33,13 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import io.ktor.server.util.getValue
 
-fun Route.ingredientRoutes(
-  ingredientRepository: IngredientRepository,
-  recipeRepository: RecipeRepository,
-) {
+fun Route.ingredientRoutes(ingredientRepository: IngredientRepository) {
   route("ingredients") {
     route("{ingredientId}") {
       findIngredientRoute(FindIngredientHandler(ingredientRepository))
 
       route("recipes") {
-        getRecipesByIngredientRoute(
-          GetRecipesByIngredientHandler(ingredientRepository, recipeRepository,)
-        )
+        getRecipesByIngredientRoute(GetRecipesByIngredientHandler(ingredientRepository))
       }
     }
   }

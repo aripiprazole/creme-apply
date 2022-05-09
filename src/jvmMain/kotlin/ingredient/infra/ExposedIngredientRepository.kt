@@ -18,23 +18,37 @@
 
 package creme.apply.ingredient.infra
 
+import creme.apply.equipment.domain.EquipmentRepository
 import creme.apply.food.domain.FoodRepository
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
 import creme.apply.recipe.domain.Recipe
+import creme.apply.recipe.infra.RecipeTable
+import creme.apply.recipe.infra.toRecipe
 import creme.apply.shared.domain.EntityNotFoundException
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import java.util.UUID
 
-class ExposedIngredientRepository(private val foodRepository: FoodRepository) : IngredientRepository {
+class ExposedIngredientRepository(
+  private val foodRepository: FoodRepository,
+  private val equipmentRepository: EquipmentRepository,
+) : IngredientRepository {
   override suspend fun findIngredient(id: String): Ingredient? = newSuspendedTransaction {
     IngredientTable
       .select { IngredientTable.id eq UUID.fromString(id) }
       .map { it.toIngredient(foodRepository) }
       .firstOrNull()
   }
+
+  override suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe> =
+    newSuspendedTransaction {
+      (RecipeTable innerJoin IngredientTable)
+        .select { RecipeTable.id eq IngredientTable.recipeId }
+        .map { it.toRecipe(this@ExposedIngredientRepository, equipmentRepository) }
+        .toSet()
+    }
 
   override suspend fun getIngredientsByRecipe(recipe: Recipe): Set<Ingredient> {
     TODO("Not yet implemented")

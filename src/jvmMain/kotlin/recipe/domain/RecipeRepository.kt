@@ -18,13 +18,10 @@
 
 package creme.apply.recipe.domain
 
-import creme.apply.ingredient.domain.Ingredient
 import creme.apply.paging.domain.Paginated
 
 interface RecipeRepository {
   suspend fun getRecipes(page: Int): Paginated<Recipe>
-
-  suspend fun getRecipesByIngredient(ingredient: Ingredient): Set<Recipe>
 
   suspend fun findRecipe(id: String): Recipe?
 }

@@ -22,7 +22,6 @@ import creme.apply.food.domain.Food
 import creme.apply.ingredient.domain.Ingredient
 import creme.apply.ingredient.domain.IngredientRepository
 import creme.apply.recipe.domain.Recipe
-import creme.apply.recipe.domain.RecipeRepository
 import creme.apply.shared.domain.EntityNotFoundException
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -46,18 +45,15 @@ class GetRecipesByIngredientHandlerTests {
 
     val ingredientRepository = mockk<IngredientRepository> {
       coEvery { findIngredient(ingredient.id) } returns ingredient
-    }
-
-    val recipeRepository = mockk<RecipeRepository> {
       coEvery { getRecipesByIngredient(ingredient) } returns recipeSet
     }
 
-    val handler = GetRecipesByIngredientHandler(ingredientRepository, recipeRepository)
+    val handler = GetRecipesByIngredientHandler(ingredientRepository)
 
     runBlocking { handler.handle(GetRecipesByIngredientInput(ingredient.id)) }
 
     coVerify(exactly = 1) { ingredientRepository.findIngredient(ingredient.id) }
-    coVerify(exactly = 1) { recipeRepository.getRecipesByIngredient(ingredient) }
+    coVerify(exactly = 1) { ingredientRepository.getRecipesByIngredient(ingredient) }
   }
 
   @Test
@@ -72,15 +68,13 @@ class GetRecipesByIngredientHandlerTests {
     val ingredientRepository = mockk<IngredientRepository> {
       coEvery { findIngredient(any()) } returns null
     }
-    val recipeRepository = mockk<RecipeRepository>()
-
-    val handler = GetRecipesByIngredientHandler(ingredientRepository, recipeRepository)
+    val handler = GetRecipesByIngredientHandler(ingredientRepository)
 
     assertThrows<EntityNotFoundException>("Requested entity with id ${ingredient.id} was not found.") {
       runBlocking { handler.handle(GetRecipesByIngredientInput(ingredient.id)) }
     }
 
     coVerify(exactly = 1) { ingredientRepository.findIngredient(any()) }
-    coVerify(exactly = 0) { recipeRepository.getRecipesByIngredient(ingredient) }
+    coVerify(exactly = 0) { ingredientRepository.getRecipesByIngredient(ingredient) }
   }
 }

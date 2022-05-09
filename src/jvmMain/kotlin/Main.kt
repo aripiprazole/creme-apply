@@ -39,8 +39,8 @@ fun main() {
   embeddedServer(Netty, port = 8000) {
     val foodRepository = ExposedFoodRepository()
     val toolRepository = ExposedToolRepository()
-    val ingredientRepository = ExposedIngredientRepository(foodRepository)
     val equipmentRepository = ExposedEquipmentRepository(toolRepository)
+    val ingredientRepository = ExposedIngredientRepository(foodRepository, equipmentRepository)
     val recipeRepository = ExposedRecipeRepository(ingredientRepository, equipmentRepository)
 
     install(StatusPages) {
@@ -51,7 +51,7 @@ fun main() {
 
     routing {
       recipeRoutes(recipeRepository)
-      ingredientRoutes(ingredientRepository, recipeRepository)
+      ingredientRoutes(ingredientRepository)
     }
   }.start(wait = true)
 }
